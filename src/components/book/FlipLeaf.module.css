@@ -1,0 +1,53 @@
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  perspective: 2600px;
+  perspective-origin: 50% 40%;
+}
+
+.single {
+  perspective: 1700px;
+  perspective-origin: 30% 40%;
+}
+
+.cast {
+  position: absolute;
+  top: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.leaf {
+  position: absolute;
+  top: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+/* Oscurece la cara que se inclina (la luz viene de arriba a la derecha). */
+.shade {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  opacity: 0;
+  background: linear-gradient(90deg, rgb(36 20 12 / 0.65), rgb(36 20 12 / 0.12) 55%, rgb(251 248 245 / 0.18));
+  pointer-events: none;
+}
+
+.shadeFromRight {
+  background: linear-gradient(270deg, rgb(36 20 12 / 0.65), rgb(36 20 12 / 0.12) 55%, rgb(251 248 245 / 0.18));
+}

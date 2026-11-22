@@ -1,0 +1,221 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+  background: rgb(40 23 15 / 0.6);
+  backdrop-filter: blur(3px);
+  animation: cozy-fade-up 260ms ease both;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: min(860px, 100%);
+  height: min(94dvh, 820px);
+  padding: 18px 22px 14px;
+  border-radius: 8px 8px 18px 18px;
+  box-shadow: var(--shadow-lift);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.headText {
+  flex: 1;
+  min-width: 0;
+}
+
+.kicker {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.title {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 620;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--choco);
+}
+
+.progress {
+  display: flex;
+  gap: 6px;
+  margin: 14px 0 6px;
+}
+
+.progress li {
+  flex: 1;
+}
+
+.progress button {
+  display: block;
+  width: 100%;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper-shade);
+}
+
+.progress li[data-done] button {
+  background: var(--beige-rosado);
+}
+
+.progress li[data-current] button {
+  background: var(--caramelo);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 4px;
+}
+
+.stepLabel {
+  margin-bottom: 10px;
+  font-family: var(--font-hand);
+  font-size: 28px;
+  font-weight: 650;
+  color: var(--caramelo);
+}
+
+/* Texto grande para leerlo desde la encimera. */
+.stepText {
+  margin-bottom: 18px;
+  font-family: var(--font-body);
+  font-size: clamp(22px, 3.6vw, 32px);
+  line-height: 1.45;
+  color: var(--choco);
+  text-wrap: pretty;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.photo {
+  width: min(100%, 460px);
+  aspect-ratio: 4 / 3;
+  margin-bottom: 16px;
+  object-fit: cover;
+  border: 8px solid var(--cream);
+  box-shadow: var(--shadow-soft);
+}
+
+.ingredients ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ingredients label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-bottom: 1px dotted var(--line);
+  font-size: clamp(18px, 2.6vw, 24px);
+  cursor: pointer;
+}
+
+.ingredients input {
+  width: 24px;
+  height: 24px;
+  accent-color: var(--caramelo);
+}
+
+.ingredients label:has(input:checked) {
+  color: var(--ink-muted);
+  text-decoration: line-through;
+}
+
+.done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 20px;
+  text-align: center;
+}
+
+.doneTitle {
+  font-family: var(--font-hand);
+  font-size: 44px;
+  font-weight: 700;
+  color: var(--caramelo);
+}
+
+.timers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.timerChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--choco);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.timerChip svg {
+  width: 15px;
+  height: 15px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1.5px dashed var(--line);
+}
+
+.heard,
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+.heard svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 560px) {
+  .overlay {
+    padding: 0;
+  }
+  .card {
+    height: 100%;
+    border-radius: 0;
+    padding: 14px;
+  }
+}

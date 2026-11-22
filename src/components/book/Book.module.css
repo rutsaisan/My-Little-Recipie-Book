@@ -1,0 +1,110 @@
+.book {
+  position: relative;
+  transform-origin: top left;
+}
+
+.shift {
+  position: absolute;
+}
+
+/* Tapa de cartón (vichy) bajo cada montón de hojas. */
+.board {
+  position: absolute;
+  z-index: 0;
+  box-shadow:
+    0 28px 50px rgb(36 20 12 / 0.42),
+    0 8px 16px rgb(36 20 12 / 0.3);
+}
+
+/* Cantos de las hojas: se dibujan con sombras sólidas desplazadas. */
+.stack {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  border-radius: 2px 7px 7px 2px;
+  background: var(--paper-shade);
+}
+
+.slot {
+  position: absolute;
+  top: 0;
+  z-index: 3;
+}
+
+.coverButton {
+  position: absolute;
+  top: 0;
+  z-index: 7;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform-origin: left center;
+  transition: transform 450ms var(--ease-soft);
+}
+
+@media (hover: hover) {
+  .coverButton:hover {
+    transform: perspective(2400px) rotateY(-8deg);
+  }
+}
+
+.coverButton:focus-visible {
+  outline-offset: 8px;
+  border-radius: 12px;
+}
+
+.spiral {
+  z-index: 8;
+}
+
+.leafBack {
+  position: absolute;
+  inset: 0;
+}
+
+/* ── Esquinas para pasar página ──────────────────────────────────────── */
+
+.corner {
+  position: absolute;
+  bottom: 0;
+  z-index: 4;
+  width: 74px;
+  height: 74px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+/* La esquina se dobla un poco al pasar el ratón (dobladillo). */
+.corner::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  transition:
+    width 220ms var(--ease-soft),
+    height 220ms var(--ease-soft);
+  filter: drop-shadow(-2px -2px 3px rgb(36 20 12 / 0.25));
+}
+
+.cornerNext::before {
+  right: 0;
+  border-radius: 0 0 7px 0;
+  background: linear-gradient(315deg, transparent 50%, var(--paper-deep) 50%, var(--cream) 85%);
+}
+
+.cornerPrev::before {
+  left: 0;
+  border-radius: 0 0 0 7px;
+  background: linear-gradient(45deg, transparent 50%, var(--paper-deep) 50%, var(--cream) 85%);
+}
+
+@media (hover: hover) {
+  .corner:hover::before {
+    width: 34px;
+    height: 34px;
+  }
+}

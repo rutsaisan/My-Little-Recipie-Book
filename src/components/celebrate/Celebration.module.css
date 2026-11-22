@@ -1,0 +1,124 @@
+.wrap {
+  position: fixed;
+  top: 78px;
+  left: 50%;
+  z-index: var(--z-toast);
+  width: min(420px, calc(100vw - 24px));
+  transform: translateX(-50%);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 40px 14px 14px;
+  border-radius: 6px 6px 16px 16px;
+  outline: 1.5px dashed rgb(151 110 79 / 0.5);
+  outline-offset: -6px;
+  box-shadow: var(--shadow-lift);
+  animation: cozy-pop 520ms var(--ease-out-back) both;
+}
+
+.sticker {
+  flex: none;
+}
+
+.burst {
+  position: absolute;
+  top: 50%;
+  left: 62px;
+  width: 0;
+  height: 0;
+}
+
+.burst i {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--caramelo);
+  transform: rotate(var(--a)) translateX(0);
+  animation: burst 900ms ease-out both;
+}
+
+.burst i:nth-child(odd) {
+  background: var(--beige-rosado);
+}
+
+@keyframes burst {
+  to {
+    transform: rotate(var(--a)) translateX(70px);
+    opacity: 0;
+  }
+}
+
+.text {
+  min-width: 0;
+}
+
+.kicker {
+  font-family: var(--font-hand);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--caramelo);
+  line-height: 1;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 650;
+  color: var(--choco);
+  line-height: 1.2;
+}
+
+.desc,
+.reward {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+
+.reward {
+  font-weight: 600;
+  color: var(--caramelo);
+}
+
+.album {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  padding: 4px 12px;
+  border: 1.4px dashed rgb(142 96 62 / 0.6);
+  border-radius: 999px;
+  background: var(--cream);
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--caramelo);
+}
+
+.album svg {
+  width: 15px;
+  height: 15px;
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink-muted);
+}
+
+.close svg {
+  width: 16px;
+  height: 16px;
+}

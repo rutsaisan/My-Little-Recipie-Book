@@ -1,0 +1,83 @@
+/*
+ * Texturas reutilizables (clases globales):
+ *   .tex-paper    papel de recetario con grano y bordes envejecidos
+ *   .tex-gingham  tela vichy clara de la portada (como la referencia)
+ *   .tex-tablecloth  mantel vichy oscuro de la mesa
+ */
+
+.tex-paper {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(120% 90% at 50% 45%, transparent 62%, rgb(142 96 62 / 0.1) 100%),
+    radial-gradient(40% 30% at 85% 12%, rgb(187 156 134 / 0.12), transparent 70%),
+    radial-gradient(35% 25% at 12% 88%, rgb(165 132 109 / 0.1), transparent 70%),
+    url('../assets/textures/paper-grain.svg');
+  background-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    240px 240px;
+}
+
+.tex-gingham {
+  --g-base: var(--linen);
+  --g-stripe: rgb(151 110 79 / 0.55);
+  --g-size: 46px;
+  background-color: var(--g-base);
+  background-image:
+    url('../assets/textures/linen.svg'),
+    linear-gradient(90deg, var(--g-stripe) 50%, transparent 0),
+    linear-gradient(var(--g-stripe) 50%, transparent 0);
+  background-size:
+    320px 320px,
+    var(--g-size) var(--g-size),
+    var(--g-size) var(--g-size);
+}
+
+.tex-tablecloth {
+  --g-base: var(--beige-tostado);
+  --g-stripe: rgb(78 47 33 / 0.42);
+  --g-size: 84px;
+  background-color: var(--g-base);
+  background-image:
+    radial-gradient(120% 85% at 50% 42%, rgb(187 156 134 / 0.28) 0%, transparent 55%),
+    radial-gradient(140% 120% at 50% 50%, transparent 45%, rgb(40 23 15 / 0.62) 100%),
+    url('../assets/textures/linen.svg'),
+    linear-gradient(90deg, var(--g-stripe) 50%, transparent 0),
+    linear-gradient(var(--g-stripe) 50%, transparent 0);
+  background-size:
+    100% 100%,
+    100% 100%,
+    320px 320px,
+    var(--g-size) var(--g-size),
+    var(--g-size) var(--g-size);
+  background-position: center;
+}
+
+/* Manteles que se desbloquean con insignias especiales. */
+.tex-tablecloth-light {
+  --g-base: var(--linen);
+  --g-stripe: rgb(151 110 79 / 0.5);
+  --g-size: 64px;
+}
+
+.tex-tablecloth-linen {
+  --g-stripe: transparent;
+}
+
+.tex-tablecloth-wood {
+  background-image:
+    radial-gradient(120% 85% at 50% 42%, rgb(187 156 134 / 0.22) 0%, transparent 55%),
+    radial-gradient(140% 120% at 50% 50%, transparent 45%, rgb(40 23 15 / 0.6) 100%),
+    url('../assets/textures/linen.svg'),
+    repeating-linear-gradient(90deg, rgb(78 47 33 / 0.55) 0 2px, transparent 2px 180px),
+    repeating-linear-gradient(90deg, transparent 0 37px, rgb(78 47 33 / 0.08) 37px 39px, transparent 39px 91px),
+    linear-gradient(90deg, var(--tostado), var(--avellana) 30%, var(--tostado) 60%, var(--caramelo));
+  background-size:
+    100% 100%,
+    100% 100%,
+    320px 320px,
+    auto,
+    auto,
+    100% 100%;
+}

@@ -1,0 +1,57 @@
+.dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-width: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  color: var(--ink);
+}
+
+.dialog::backdrop {
+  background: rgb(40 23 15 / 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.dialog[open] .card {
+  animation: cozy-pop 320ms var(--ease-out-back) both;
+}
+
+.card {
+  position: relative;
+  padding: 58px 28px 24px;
+  border-radius: 6px 6px 14px 14px;
+  box-shadow: var(--shadow-lift);
+  text-align: center;
+}
+
+.character {
+  position: absolute;
+  top: -62px;
+  left: 50%;
+  margin-left: -59px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--choco);
+  text-wrap: balance;
+}
+
+.body {
+  margin-top: 10px;
+  color: var(--ink-soft);
+  font-size: 15.5px;
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}

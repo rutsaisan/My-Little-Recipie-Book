@@ -1,0 +1,149 @@
+.kicker {
+  padding-top: 2px;
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.album {
+  display: flow-root;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-style: italic;
+  font-weight: 600;
+  font-variation-settings:
+    'SOFT' 100,
+    'WONK' 1;
+  line-height: 1.1;
+  color: var(--choco);
+}
+
+.counters {
+  margin-top: 6px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+
+.counters strong {
+  font-family: var(--font-display);
+  color: var(--caramelo);
+}
+
+.divider {
+  width: 160px;
+  margin-top: 8px;
+}
+
+.grid {
+  display: grid;
+  gap: 0 8px;
+}
+
+/* Casilla: como el hueco de una pegatina en un álbum. */
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 4px 4px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 82px;
+  height: 66px;
+  margin-bottom: 4px;
+}
+
+.locked .art::before {
+  content: '';
+  position: absolute;
+  inset: 2px 8px;
+  border: 1.6px dashed rgb(151 110 79 / 0.45);
+  border-radius: 50%;
+}
+
+.sticker {
+  max-height: 64px;
+}
+
+.sticker img {
+  object-fit: contain;
+}
+
+.locked .sticker {
+  filter: grayscale(1) sepia(0.4) opacity(0.28);
+}
+
+.locked .sticker img {
+  filter: none;
+}
+
+.lock {
+  position: absolute;
+  right: 8px;
+  bottom: 2px;
+  width: 15px;
+  height: 15px;
+  color: var(--beige-tostado);
+}
+
+.name {
+  display: -webkit-box;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 620;
+  line-height: 1.2;
+  color: var(--choco);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.locked .name {
+  color: var(--ink-muted);
+}
+
+.detail {
+  display: -webkit-box;
+  margin-top: 2px;
+  overflow: hidden;
+  font-size: 11.5px;
+  line-height: 1.3;
+  color: var(--ink-soft);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.date {
+  display: block;
+  font-family: var(--font-hand);
+  font-size: 15px;
+  color: var(--caramelo);
+}
+
+.progress {
+  margin-left: 4px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgb(187 156 134 / 0.3);
+  font-weight: 600;
+  white-space: nowrap;
+}

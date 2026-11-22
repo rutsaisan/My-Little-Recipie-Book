@@ -1,0 +1,194 @@
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 560;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    transform var(--dur-fast) var(--ease-soft),
+    box-shadow var(--dur-fast) var(--ease-soft),
+    background-color var(--dur-fast) var(--ease-soft);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Pespunte interior, como una etiqueta de tela cosida. */
+.button::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  border: 1.3px dashed currentColor;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.md {
+  min-height: 42px;
+  padding: 0 1.15em;
+  font-size: 15px;
+}
+
+.sm {
+  min-height: 34px;
+  padding: 0 0.95em;
+  font-size: 14px;
+}
+
+.icon {
+  display: inline-flex;
+  margin-left: -0.15em;
+}
+
+.icon svg {
+  width: 1.15em;
+  height: 1.15em;
+}
+
+.label {
+  padding-top: 0.06em;
+}
+
+.primary {
+  color: var(--cream);
+  background: var(--caramelo);
+  box-shadow:
+    inset 0 1px 0 rgb(251 248 245 / 0.25),
+    0 2px 0 var(--tostado),
+    0 6px 14px rgb(78 47 33 / 0.28);
+}
+
+.secondary {
+  color: var(--choco);
+  background: var(--paper);
+  box-shadow:
+    inset 0 0 0 1.5px var(--line),
+    0 2px 0 var(--paper-shade),
+    0 4px 10px rgb(78 47 33 / 0.14);
+}
+
+.ghost {
+  color: var(--ink-soft);
+  background: transparent;
+}
+
+.ghost::after {
+  display: none;
+}
+
+.danger {
+  color: var(--cream);
+  background: var(--cacao);
+  box-shadow:
+    0 2px 0 var(--choco),
+    0 6px 14px rgb(78 47 33 / 0.3);
+}
+
+@media (hover: hover) {
+  .button:not(:disabled):hover {
+    transform: translateY(-1.5px);
+  }
+  .primary:not(:disabled):hover {
+    background: var(--avellana);
+  }
+  .secondary:not(:disabled):hover {
+    background: var(--cream);
+  }
+  .ghost:not(:disabled):hover {
+    color: var(--choco);
+    background: rgb(187 156 134 / 0.18);
+  }
+  .danger:not(:disabled):hover {
+    background: var(--choco);
+  }
+}
+
+.button:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+.button:disabled {
+  opacity: 0.5;
+}
+
+/* ── Botones redondos con icono ──────────────────────────────────────── */
+
+.iconButton {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--choco);
+  transition:
+    transform var(--dur-fast) var(--ease-soft),
+    background-color var(--dur-fast) var(--ease-soft),
+    color var(--dur-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon-md {
+  width: 40px;
+  height: 40px;
+}
+
+.icon-sm {
+  width: 30px;
+  height: 30px;
+}
+
+.icon-md svg {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-sm svg {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-paper {
+  background: var(--paper);
+  box-shadow:
+    inset 0 0 0 1.5px var(--line),
+    0 2px 0 var(--paper-shade),
+    0 4px 10px rgb(78 47 33 / 0.16);
+}
+
+.icon-plain {
+  background: transparent;
+  color: var(--ink-soft);
+}
+
+.icon-solid {
+  color: var(--cream);
+  background: var(--caramelo);
+  box-shadow: 0 2px 0 var(--tostado);
+}
+
+@media (hover: hover) {
+  .iconButton:not(:disabled):hover {
+    transform: translateY(-1px);
+  }
+  .icon-paper:not(:disabled):hover {
+    background: var(--cream);
+  }
+  .icon-plain:not(:disabled):hover {
+    color: var(--choco);
+    background: rgb(187 156 134 / 0.22);
+  }
+  .icon-solid:not(:disabled):hover {
+    background: var(--avellana);
+  }
+}
+
+.iconButton:disabled {
+  opacity: 0.4;
+}

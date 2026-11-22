@@ -1,0 +1,178 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  background: rgb(40 23 15 / 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(620px, 100%);
+  max-height: min(92dvh, 760px);
+  padding: 18px 22px 16px;
+  border-radius: 8px 8px 18px 18px;
+  box-shadow: var(--shadow-lift);
+  animation: cozy-pop 320ms var(--ease-out-back) both;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.headText {
+  flex: 1;
+}
+
+.kicker {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 620;
+  color: var(--choco);
+}
+
+.prompt {
+  font-size: 17px;
+  color: var(--choco);
+}
+
+.example {
+  font-family: var(--font-hand);
+  font-size: 19px;
+  color: var(--caramelo);
+}
+
+.mic {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 10px;
+  margin: 6px 0;
+  padding: 14px 26px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--caramelo);
+  box-shadow: 0 3px 0 var(--tostado), 0 8px 18px rgb(78 47 33 / 0.3);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.mic svg {
+  width: 22px;
+  height: 22px;
+}
+
+.listening {
+  background: var(--cacao);
+  animation: mic-pulse 1.4s ease-in-out infinite;
+}
+
+.interim {
+  font-style: italic;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.warning {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgb(187 156 134 / 0.25);
+  font-size: 14px;
+  color: var(--cacao);
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 40px;
+  overflow-y: auto;
+}
+
+.items li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 4px;
+  border-bottom: 1px dotted var(--line);
+}
+
+.bullet {
+  flex: none;
+  min-width: 18px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--caramelo);
+}
+
+.itemText {
+  flex: 1;
+  font-size: 15.5px;
+}
+
+.items button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink-muted);
+}
+
+.items button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.typed input {
+  width: 100%;
+  min-height: 40px;
+  padding: 7px 11px;
+  border: 0;
+  border-bottom: 1.5px solid var(--beige-tostado);
+  border-radius: 8px 8px 2px 2px;
+  background: rgb(251 248 245 / 0.75);
+  font-size: 15px;
+}
+
+.typed input:focus {
+  outline: none;
+  border-bottom-color: var(--caramelo);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1.5px dashed var(--line);
+}
+
+@keyframes mic-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(142 96 62 / 0.45), 0 8px 18px rgb(78 47 33 / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgb(142 96 62 / 0), 0 8px 18px rgb(78 47 33 / 0.3);
+  }
+}

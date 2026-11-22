@@ -1,0 +1,24 @@
+/* Fuera de la pantalla pero con la misma tipografía que las páginas. */
+.measurer {
+  position: fixed;
+  top: 0;
+  left: -20000px;
+  visibility: hidden;
+  pointer-events: none;
+  contain: layout style;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.recipe {
+  display: flow-root;
+}
+
+/* Igual que la columna de la foto en la página (centrado en su hueco). */
+.aside {
+  display: flex;
+  justify-content: center;
+}

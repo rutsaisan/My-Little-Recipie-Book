@@ -1,0 +1,32 @@
+.spiral {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.ring {
+  fill: none;
+  stroke-width: 4.2;
+  stroke-linecap: round;
+}
+
+.shadow {
+  fill: none;
+  stroke: rgb(36 20 12 / 0.32);
+  stroke-width: 4.6;
+  stroke-linecap: round;
+  filter: blur(0.8px);
+}
+
+.back {
+  fill: none;
+  stroke: #4e2f21;
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+.hole {
+  fill: var(--hole);
+}

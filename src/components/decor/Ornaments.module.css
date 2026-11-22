@@ -1,0 +1,32 @@
+.corner {
+  width: 46px;
+  height: 46px;
+  color: var(--topo);
+  opacity: 0.7;
+}
+
+.divider {
+  display: block;
+  width: 100%;
+  height: 14px;
+  color: var(--beige-tostado);
+}
+
+/* Cinta washi: rayas suaves y bordes dentados, ligeramente translúcida. */
+.tape {
+  position: absolute;
+  display: block;
+  width: 74px;
+  height: 22px;
+  background:
+    repeating-linear-gradient(-45deg, rgb(251 248 245 / 0.28) 0 5px, transparent 5px 10px),
+    rgb(165 132 109 / 0.62);
+  clip-path: polygon(
+    0 8%, 6% 0, 12% 10%, 18% 2%, 24% 9%, 30% 1%, 36% 8%, 42% 0, 48% 9%, 54% 1%, 60% 8%, 66% 0, 72% 9%, 78% 2%,
+    84% 10%, 90% 0, 96% 8%, 100% 3%, 100% 94%, 94% 100%, 88% 91%, 82% 99%, 76% 92%, 70% 100%, 64% 91%, 58% 99%,
+    52% 92%, 46% 100%, 40% 91%, 34% 99%, 28% 92%, 22% 100%, 16% 91%, 10% 99%, 4% 92%, 0 98%
+  );
+  box-shadow: 0 1px 1px rgb(78 47 33 / 0.08);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}

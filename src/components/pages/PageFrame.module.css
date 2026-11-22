@@ -1,0 +1,168 @@
+/*
+ * Hoja del cuaderno. Las medidas vienen de variables CSS que fija el libro
+ * a partir de la geometría (layout/geometry.ts): --page-w, --pad-inner…
+ */
+
+.page {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--page-w);
+  height: var(--page-h);
+  padding: var(--pad-top) var(--pad-outer) var(--pad-bottom) var(--pad-inner);
+  overflow: hidden;
+  border-radius: 2px 7px 7px 2px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.left {
+  padding-right: var(--pad-inner);
+  padding-left: var(--pad-outer);
+  border-radius: 7px 2px 2px 7px;
+}
+
+.surface {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Agujeros de la espiral, alineados con las anillas (ver decor/Spiral.tsx). */
+.holes {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--hole-offset) - 8px);
+  z-index: 1;
+  width: 16px;
+  background-image: radial-gradient(
+    circle at 8px 16px,
+    var(--hole) 0 3.7px,
+    rgb(58 35 24 / 0.4) 4.3px,
+    rgb(251 248 245 / 0.7) 4.9px,
+    transparent 5.8px
+  );
+  background-size: 16px var(--ring-pitch);
+  background-position: 0 calc(var(--ring-start) - 16px);
+  background-repeat: repeat-y;
+}
+
+.left .holes {
+  right: calc(var(--hole-offset) - 8px);
+  left: auto;
+}
+
+/* Sombra suave junto a la espiral. */
+.gutter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 54px;
+  background: linear-gradient(90deg, rgb(78 47 33 / 0.13), rgb(78 47 33 / 0.04) 45%, transparent);
+  pointer-events: none;
+}
+
+.left .gutter {
+  right: 0;
+  left: auto;
+  transform: scaleX(-1);
+}
+
+.corner {
+  position: absolute;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}
+
+.cornerTop {
+  top: 11px;
+  right: 11px;
+  transform: scaleX(-1);
+}
+
+.cornerBottom {
+  right: 11px;
+  bottom: 11px;
+  transform: scale(-1, -1);
+}
+
+.left .cornerTop {
+  right: auto;
+  left: 11px;
+  transform: none;
+}
+
+.left .cornerBottom {
+  right: auto;
+  left: 11px;
+  transform: scaleY(-1);
+}
+
+.gingham .corner {
+  display: none;
+}
+
+.head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: none;
+  align-items: flex-start;
+  justify-content: center;
+  height: var(--head-h);
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--block-gap);
+  height: var(--body-h);
+}
+
+.scrollable {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--beige-tostado) transparent;
+}
+
+.foot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: none;
+  align-items: flex-end;
+  justify-content: center;
+  height: var(--foot-h);
+}
+
+.number {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
+.number::before,
+.number::after {
+  content: '';
+  width: 14px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+}
