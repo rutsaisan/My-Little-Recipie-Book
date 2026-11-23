@@ -4,12 +4,14 @@
  * órdenes de voz («siguiente», «repite», «pon un temporizador de 10 minutos»).
  * Mientras está abierto, la pantalla no se apaga (si el navegador lo permite).
  */
-import { ArrowLeft, ArrowRight, Check, CookingPot, Hand, Mic, MicOff, Timer, Volume2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, CookingPot, Hand, Mic, MicOff, Timer, Video, VideoOff, Volume2, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { HandGesture } from '../../domain/gestureTracker';
 import { ingredientToText } from '../../domain/ingredients';
 import type { Recipe } from '../../domain/recipe';
 import { formatClock, formatDuration, parseCommand, suggestTimer } from '../../domain/voiceCommands';
 import { usePhotoUrl } from '../../hooks/usePhotoUrl';
+import { cameraSupported } from '../../services/gestures/handCamera';
 import { listen, speechRecognitionSupported, type Listening } from '../../services/speech/recognition';
 import { stopSpeaking } from '../../services/speech/synthesis';
 import { useAssistant } from '../../state/assistantContext';
@@ -17,6 +19,7 @@ import { usePreferences } from '../../state/preferencesContext';
 import { ingredientsToSpeech } from '../assistant/recipeSpeech';
 import { Sticker } from '../decor/Sticker';
 import { Button, IconButton } from '../ui/Button';
+import { HandsFreeCamera } from './HandsFreeCamera';
 import styles from './CookingMode.module.css';
 
 interface CookingModeProps {
@@ -34,6 +37,9 @@ export function CookingMode({ recipe, onClose, onFinished }: CookingModeProps) {
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [handsFree, setHandsFree] = useState<Listening | null>(null);
   const [heard, setHeard] = useState('');
+  /** «Manos libres» con la cámara: apagado salvo que se pulse el botón. */
+  const [camera, setCamera] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const total = recipe.steps.length;
   const step = index >= 1 && index <= total ? recipe.steps[index - 1] : null;
   const photo = usePhotoUrl(recipe.photoMode === 'process' ? (step?.photoId ?? null) : null);
@@ -117,6 +123,42 @@ export function CookingMode({ recipe, onClose, onFinished }: CookingModeProps) {
     [a, go, recipe, startTimer, textFor],
   );
 
+  const onGesture = useCallback(
+    (gesture: HandGesture) => {
+      const { index: i } = stateRef.current;
+      switch (gesture) {
+        case 'next':
+          return go(i + 1);
+        case 'previous':
+          return go(i - 1);
+        case 'palm': {
+          // Mano abierta: si suena una alarma la para; si no, repite el paso.
+          const ringing = a.timers.filter((t) => t.ringing);
+          if (ringing.length) {
+            ringing.forEach((t) => a.removeTimer(t.id));
+            return a.say('Alarma parada.', { voice: false });
+          }
+          return a.say(textFor(i), { voice: true });
+        }
+        case 'thumbUp': {
+          const current = i >= 1 && i <= stateRef.current.total ? recipe.steps[i - 1] : null;
+          const seconds = current ? suggestTimer(current.text) : null;
+          if (seconds) return startTimer(seconds);
+          return a.say('Este paso no dice ningún tiempo. Pon uno desde mi panel o con la voz.', { voice: false });
+        }
+      }
+    },
+    [a, go, recipe.steps, startTimer, textFor],
+  );
+
+  const toggleCamera = () => {
+    setCameraError(null);
+    setCamera((on) => {
+      if (!on) a.say('Manos libres: pasa la mano delante de la cámara para cambiar de paso. Las imágenes no salen de tu dispositivo.', { voice: false });
+      return !on;
+    });
+  };
+
   const handleRef = useRef(handleCommand);
   useEffect(() => {
     handleRef.current = handleCommand;
@@ -174,6 +216,18 @@ export function CookingMode({ recipe, onClose, onFinished }: CookingModeProps) {
             <p className={styles.kicker}>Cocinando</p>
             <h2 className={styles.title}>{recipe.title}</h2>
           </div>
+          {cameraSupported() && (
+            <Button
+              size="sm"
+              variant={camera ? 'primary' : 'secondary'}
+              icon={camera ? <Video /> : <VideoOff />}
+              onClick={toggleCamera}
+              aria-pressed={camera}
+              title="Pasar los pasos con gestos de la mano delante de la cámara"
+            >
+              {camera ? 'Cámara activa' : 'Manos libres'}
+            </Button>
+          )}
           {speechRecognitionSupported() && (
             <Button
               size="sm"
@@ -181,8 +235,9 @@ export function CookingMode({ recipe, onClose, onFinished }: CookingModeProps) {
               icon={handsFree ? <Mic /> : <MicOff />}
               onClick={toggleHandsFree}
               aria-pressed={Boolean(handsFree)}
+              title="Dar órdenes con la voz: «siguiente», «repite», «pon un temporizador»…"
             >
-              {handsFree ? 'Te escucho' : 'Manos libres'}
+              {handsFree ? 'Te escucho' : 'Voz'}
             </Button>
           )}
           <IconButton label="Salir del modo cocina" onClick={onClose}>
@@ -298,6 +353,16 @@ export function CookingMode({ recipe, onClose, onFinished }: CookingModeProps) {
             <span />
           )}
         </footer>
+        {camera && (
+          <HandsFreeCamera
+            onGesture={onGesture}
+            onError={(message) => {
+              setCamera(false);
+              setCameraError(message);
+            }}
+          />
+        )}
+        {cameraError && <p className={styles.hint}>{cameraError}</p>}
         {handsFree && (
           <p className={styles.heard}>
             <Hand aria-hidden="true" /> {heard ? `He oído: «${heard}»` : 'Escuchando…'}

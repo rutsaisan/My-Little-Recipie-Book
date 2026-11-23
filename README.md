@@ -113,6 +113,31 @@ El reconocimiento de voz usa el del navegador (Chrome, Edge o Safari), que
 envía el audio a su servicio para pasarlo a texto; la app no guarda
 grabaciones. Si el navegador no lo admite, todo lo demás funciona escribiendo.
 
+## Manos libres con la cámara (gestos)
+
+En el modo cocina (botón ▶ de una receta) hay dos botones opcionales,
+**apagados por defecto**:
+
+- **Manos libres**: enciende la cámara y permite cambiar de paso sin tocar
+  la pantalla. Se ve una ventanita en espejo con un punto que indica que la
+  cámara está encendida y la chuleta de gestos:
+
+  | Gesto | Qué hace |
+  |---|---|
+  | Pasar la mano hacia tu izquierda | Siguiente paso |
+  | Pasar la mano hacia tu derecha | Paso anterior |
+  | Mano abierta, quieta un momento | Repite el paso en voz alta (o para la alarma si suena) |
+  | Pulgar arriba, quieto un momento | Pone el temporizador que dice el paso |
+
+- **Voz**: las órdenes habladas de siempre («siguiente», «repite», «pon un
+  temporizador de diez minutos»…).
+
+La cámara se apaga al desactivarlo o al salir del modo cocina. Los gestos se
+reconocen en el propio dispositivo con MediaPipe (de Google): las imágenes no
+salen de él. La primera vez se descargan el motor y el modelo (unos 20 MB) y
+quedan guardados para usarlos sin conexión. Funciona también en la versión
+publicada en GitHub Pages.
+
 ## Privacidad y avisos
 
 - La primera vez aparece un **aviso de privacidad**: la app no usa cookies de

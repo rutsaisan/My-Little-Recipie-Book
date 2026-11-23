@@ -276,6 +276,14 @@ texto ────────────────────────�
 - **Tom arrastrable** y hoja inferior en el móvil; posición guardada en
   ajustes (`assistantPosition`).
 
+- **Gestos con la cámara** («Manos libres» del modo cocina):
+  `domain/gestureTracker.ts` (lógica pura y probada: deslizar, mantener la
+  palma o el pulgar, pausa entre gestos), `services/gestures/handCamera.ts`
+  (cámara + MediaPipe Gesture Recognizer cargado solo al activarlo, ~15
+  análisis por segundo, versión del motor inyectada desde `package.json` en
+  `vite.config.ts`) y `components/cooking/HandsFreeCamera.tsx`. El motor y
+  el modelo se guardan con una caché de Workbox para usarlos sin conexión.
+
 ### Base de datos y cuentas
 - Implementar `data/api/repositories.ts` (mismas interfaces de
   `data/types.ts`) y registrarlo en `data/index.ts`; activar con

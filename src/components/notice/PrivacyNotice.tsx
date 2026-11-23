@@ -124,6 +124,11 @@ export function PrivacyDialog({ open, onClose, onAccept }: PrivacyDialogProps) {
           puede enviar el audio a su servicio para pasarlo a texto. La app no guarda grabaciones.
         </p>
         <p>
+          <strong>Cámara («Manos libres»).</strong> Solo se enciende si la activas en el modo cocina, y se apaga al
+          desactivarla o salir. Las imágenes se analizan en tu dispositivo y no se envían a ningún sitio; la primera vez
+          se descarga el modelo de gestos (de Google) y queda guardado.
+        </p>
+        <p>
           <strong>IA (Tom e importar vídeos).</strong> Solo funciona en un ordenador con la app instalada y Ollama: la IA
           trabaja en ese mismo ordenador y los vídeos no salen de él.
         </p>
