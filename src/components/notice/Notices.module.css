@@ -1,0 +1,48 @@
+/* Aviso de privacidad: abajo a la izquierda, lejos de Tom. */
+.privacySlot {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: var(--z-toast);
+  display: flex;
+  width: min(300px, calc(100vw - 32px));
+  animation: cozy-fade-up 420ms var(--ease-out-back) both;
+}
+
+.privacySlot > * {
+  width: 100%;
+}
+
+@media (max-width: 620px) {
+  .privacySlot {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.policy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: min(55dvh, 420px);
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.policy strong {
+  color: var(--cacao);
+}
+
+/* Aviso de que Tom necesita Ollama, dentro de su panel. */
+.aiSlot {
+  display: flex;
+  justify-content: center;
+  margin-top: 46px;
+}
+
+.aiSlot > * {
+  width: 100%;
+  max-width: none;
+}

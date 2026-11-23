@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { dataSource } from '../data';
 import { createId } from '../domain/ids';
 import { primeAlarm, startAlarm, stopAlarm } from '../services/alarm';
+import { getTomStatus } from '../services/assistant/tomAI';
+import { notify } from '../services/notifications';
 import { speak, stopSpeaking } from '../services/speech/synthesis';
 import { useAchievements } from './achievementsContext';
 import { AssistantContext, type AssistantContextValue, type AssistantMood, type KitchenTimer } from './assistantContext';
@@ -22,10 +24,30 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
   const bubbleTimer = useRef<number | null>(null);
   const voiceRef = useRef(prefs.assistantVoice);
   const loadedTimers = useRef(false);
+  const [ai, setAI] = useState<AssistantContextValue['ai']>({ available: null, message: null });
+  const lastCheck = useRef(0);
 
+  // ── ¿Hay IA para responder dudas? ──
+  const recheckAI = useCallback(() => {
+    // Como mucho una comprobación cada 10 segundos.
+    if (Date.now() - lastCheck.current < 10_000) return;
+    lastCheck.current = Date.now();
+    void getTomStatus().then((status) => setAI({ available: status.ai, message: status.message }));
+  }, []);
+  useEffect(() => {
+    lastCheck.current = Date.now();
+    let alive = true;
+    void getTomStatus().then((status) => alive && setAI({ available: status.ai, message: status.message }));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const notifyTimersRef = useRef(prefs.notifications.timers);
   useEffect(() => {
     voiceRef.current = prefs.assistantVoice;
-  }, [prefs.assistantVoice]);
+    notifyTimersRef.current = prefs.notifications.timers;
+  }, [prefs.assistantVoice, prefs.notifications.timers]);
 
   const clearBubbleLater = useCallback((ms: number) => {
     if (bubbleTimer.current) window.clearTimeout(bubbleTimer.current);
@@ -111,6 +133,9 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       startAlarm();
       setPanelOpen(true);
       say(`¡Tiempo! Ya ha terminado: ${due.label}.`);
+      if (notifyTimersRef.current) {
+        void notify('¡Tiempo!', { body: `Ya ha terminado: ${due.label}.`, tag: `timer-${due.id}`, onlyWhenHidden: true });
+      }
     }, 0);
     return () => window.clearTimeout(timer);
   }, [due, say]);
@@ -142,8 +167,8 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
   const removeTimer = useCallback((id: string) => setTimers((list) => list.filter((t) => t.id !== id)), []);
 
   const value = useMemo<AssistantContextValue>(
-    () => ({ mood, bubble, say, setMood, celebrate, hush, panelOpen, setPanelOpen, timers, now, addTimer, removeTimer }),
-    [mood, bubble, say, setMood, celebrate, hush, panelOpen, timers, now, addTimer, removeTimer],
+    () => ({ mood, bubble, say, setMood, celebrate, hush, panelOpen, setPanelOpen, timers, now, addTimer, removeTimer, ai, recheckAI }),
+    [mood, bubble, say, setMood, celebrate, hush, panelOpen, timers, now, addTimer, removeTimer, ai, recheckAI],
   );
 
   return <AssistantContext.Provider value={value}>{children}</AssistantContext.Provider>;

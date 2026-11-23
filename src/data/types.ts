@@ -85,6 +85,16 @@ export interface Settings {
   assistantVoice: boolean;
   /** Temporizadores en marcha (sobreviven a recargar la página). */
   timers: { id: string; label: string; endsAt: number; seconds: number }[];
+  /** Ya se aceptó el aviso de privacidad. */
+  privacyAccepted: boolean;
+  /** Ya se vio el aviso de que Tom necesita Ollama para responder dudas. */
+  aiNoticeSeen: boolean;
+  /** Avisos del sistema (notificaciones) que la persona quiere recibir. */
+  notifications: { timers: boolean; imports: boolean; toTry: boolean };
+  /** Último recordatorio de «Por probar» (para no repetirlo cada día). */
+  lastToTryReminder: number;
+  /** Dónde se ha dejado a Tom: lado de la pantalla y altura (0 arriba, 1 abajo). */
+  assistantPosition: { side: 'left' | 'right'; y: number };
 }
 
 export interface SettingsRepository {

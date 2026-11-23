@@ -34,7 +34,9 @@ import {
   type Stage,
   type StageStatus,
 } from '../../services/importer/pipeline';
+import { notify } from '../../services/notifications';
 import { useAssistant } from '../../state/assistantContext';
+import { usePreferences } from '../../state/preferencesContext';
 import { Sticker } from '../decor/Sticker';
 import { Button, IconButton } from '../ui/Button';
 import styles from './ImportSheet.module.css';
@@ -65,6 +67,7 @@ interface ImportSheetProps {
 
 export function ImportSheet({ categoryId, onClose, onDone }: ImportSheetProps) {
   const a = useAssistant();
+  const { prefs } = usePreferences();
   const [caps, setCaps] = useState<ImportCapabilities | null>(null);
   const [capsError, setCapsError] = useState<string | null>(null);
   const [source, setSource] = useState<Source>('link');
@@ -145,6 +148,13 @@ export function ImportSheet({ categoryId, onClose, onDone }: ImportSheetProps) {
       setPhotoMode(result.stepFrames.some((f) => f !== null) ? 'process' : 'final');
       setPhase('review');
       a.setMood('celebrating');
+      if (prefs.notifications.imports) {
+        void notify('Receta lista para revisar', {
+          body: result.recipe.title ? `«${result.recipe.title}» ya está sacada del vídeo.` : 'Ya he terminado de mirar el vídeo.',
+          tag: 'import',
+          onlyWhenHidden: true,
+        });
+      }
       a.say(
         result.recipe.ingredients.length || result.recipe.steps.length
           ? '¡Ya está! Elige las fotos y repasa lo marcado como pendiente.'
@@ -155,6 +165,9 @@ export function ImportSheet({ categoryId, onClose, onDone }: ImportSheetProps) {
       setStages((all) => all.map((s) => (s.id === current ? { ...s, status: 'error' } : s)));
       const message = e instanceof Error ? e.message : 'Algo ha fallado.';
       setError({ message, linkFailed: source === 'link' && current === 'source' });
+      if (prefs.notifications.imports) {
+        void notify('No he podido sacar la receta', { body: message, tag: 'import', onlyWhenHidden: true });
+      }
       a.setMood('idle');
       a.say('Vaya, no he podido terminar. Te explico qué ha pasado.', { voice: false });
     }

@@ -28,6 +28,10 @@ export interface AssistantContextValue {
   now: number;
   addTimer: (seconds: number, label: string) => KitchenTimer;
   removeTimer: (id: string) => void;
+  /** ¿Puede responder dudas con IA (Ollama)? null mientras se comprueba. */
+  ai: { available: boolean | null; message: string | null };
+  /** Vuelve a mirar si la IA está disponible. */
+  recheckAI: () => void;
 }
 
 export const AssistantContext = createContext<AssistantContextValue | null>(null);

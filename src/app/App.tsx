@@ -6,6 +6,7 @@ import { CookingMode } from '../components/cooking/CookingMode';
 import { DictationSheet } from '../components/dictation/DictationSheet';
 import { RecipeEditor, type EditorRequest } from '../components/editor/RecipeEditor';
 import { ImportSheet } from '../components/importer/ImportSheet';
+import { PrivacyNotice } from '../components/notice/PrivacyNotice';
 import { useMusicAutostart } from '../components/music/useAmbientMusic';
 import { PersonalizeSheet } from '../components/personalize/PersonalizeSheet';
 import { Button } from '../components/ui/Button';
@@ -25,6 +26,7 @@ import { useRecipes } from '../state/recipesContext';
 import { ToastProvider } from '../state/ToastProvider';
 import { useToast } from '../state/toastContext';
 import styles from './App.module.css';
+import { useToTryReminder } from './useToTryReminder';
 
 /** Clase de textura del mantel elegido (ver styles/textures.css). */
 const TABLECLOTH_CLASS: Record<TableclothId, string> = {
@@ -58,6 +60,7 @@ function Cookbook() {
   const { prefs } = usePreferences();
   const toast = useToast();
   useMusicAutostart();
+  useToTryReminder();
   const viewport = useViewport();
   const [editor, setEditor] = useState<EditorRequest | null>(null);
   const [choosing, setChoosing] = useState<{ categoryId?: CategoryId } | null>(null);
@@ -156,6 +159,8 @@ function Cookbook() {
         // En pantallas estrechas Tom taparía los botones de la importación.
         hidden={editor !== null || dictating !== null || personalizing || (importing !== null && viewport.width < 720)}
       />
+
+      <PrivacyNotice />
 
       {personalizing && <PersonalizeSheet onClose={() => setPersonalizing(false)} />}
 

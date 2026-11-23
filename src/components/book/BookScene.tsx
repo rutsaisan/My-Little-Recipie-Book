@@ -16,7 +16,7 @@ import {
   Search,
   X,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
 import type { CategoryId } from '../../domain/categories';
 import type { Recipe, RecipeId } from '../../domain/recipe';
 import { pushRecent } from '../../domain/search';
@@ -39,6 +39,7 @@ import { BookCover } from '../cover/BookCover';
 import { Button, IconButton } from '../ui/Button';
 import { Book, type CoverState } from './Book';
 import { BookContext, type BookContextValue } from './bookContext';
+import { createDragFlip, shouldCommit, type DragFlipController } from './dragFlip';
 import { useBookNavigation } from './useBookNavigation';
 import styles from './BookScene.module.css';
 
@@ -84,7 +85,6 @@ export function BookScene({ onCreate, onEdit, onDelete, onToggleFavorite, onCook
   const [servingsMap, setServingsMap] = useState<Record<RecipeId, number>>({});
   const [highlight, setHighlight] = useState<RecipeId | null>(null);
   const [handledFocus, setHandledFocus] = useState<number | null>(null);
-  const swipe = useRef<{ x: number; y: number; t: number; id: number } | null>(null);
   const spread = geometry.mode === 'spread';
   const isOpen = cover === 'open';
   const compactToolbar = viewport.width < 720;
@@ -165,23 +165,83 @@ export function BookScene({ onCreate, onEdit, onDelete, onToggleFavorite, onCook
     return () => window.removeEventListener('keydown', onKey);
   }, [busy, isOpen, next, prev, goToView, nav.views]);
 
-  // ── Gestos (deslizar en pantallas táctiles) ──────────────────────────────
-  const onPointerDown = (event: PointerEvent) => {
-    if (!isOpen || event.pointerType === 'mouse') return;
-    if ((event.target as HTMLElement).closest('button, a, input, textarea, select')) return;
-    swipe.current = { x: event.clientX, y: event.clientY, t: performance.now(), id: event.pointerId };
+  // ── Pasar página arrastrando (dedo o ratón) ─────────────────────────────
+  // La hoja sigue al gesto; al soltar termina de girar o vuelve a su sitio.
+  const gesture = useRef<{
+    id: number;
+    x: number;
+    y: number;
+    lastX: number;
+    lastT: number;
+    velocity: number;
+    direction: 'forward' | 'backward' | null;
+    travel: number;
+  } | null>(null);
+  const [dragFlip, setDragFlip] = useState<DragFlipController | null>(null);
+  const { startDrag, cancelFlip } = nav;
+
+  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (!isOpen || nav.flip || (event.pointerType === 'mouse' && event.button !== 0)) return;
+    const target = event.target as HTMLElement;
+    if (!target.closest('[data-book-surface]') || target.closest('button, a, input, textarea, select, label')) return;
+    gesture.current = {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      lastX: event.clientX,
+      lastT: performance.now(),
+      velocity: 0,
+      direction: null,
+      // Recorrido completo de la hoja en pantalla (de un borde a la espiral y al otro lado).
+      travel: geometry.pageWidth * scale * (spread ? 2 : 1) * 0.85,
+    };
   };
-  const onPointerUp = (event: PointerEvent) => {
-    const start = swipe.current;
-    swipe.current = null;
-    if (!start || start.id !== event.pointerId) return;
-    const dx = event.clientX - start.x;
-    const dy = event.clientY - start.y;
-    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4 && performance.now() - start.t < 800) {
-      if (dx < 0) next();
-      else prev();
+
+  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const g = gesture.current;
+    if (!g || g.id !== event.pointerId) return;
+    const dx = event.clientX - g.x;
+    const dy = event.clientY - g.y;
+    if (!g.direction) {
+      if (Math.abs(dx) < 10 || Math.abs(dx) < Math.abs(dy) * 1.2) {
+        if (Math.abs(dy) > 24) gesture.current = null; // es un desplazamiento vertical
+        return;
+      }
+      const direction = dx < 0 ? 'forward' : 'backward';
+      if (!startDrag(direction)) {
+        gesture.current = null;
+        return;
+      }
+      g.direction = direction;
+      const controller = createDragFlip();
+      setDragFlip(controller);
+      event.currentTarget.setPointerCapture(event.pointerId);
+      window.getSelection()?.removeAllRanges();
     }
+    const now = performance.now();
+    const signed = g.direction === 'forward' ? -1 : 1;
+    const instant = ((event.clientX - g.lastX) * signed) / g.travel / Math.max(1, now - g.lastT);
+    g.velocity = g.velocity * 0.6 + instant * 1000 * 0.4; // progreso por segundo, suavizado
+    g.lastX = event.clientX;
+    g.lastT = now;
+    dragFlipRef.current?.set((dx * signed) / g.travel);
   };
+
+  const endGesture = (event: PointerEvent<HTMLDivElement>, cancelled = false) => {
+    const g = gesture.current;
+    if (!g || g.id !== event.pointerId) return;
+    gesture.current = null;
+    const controller = dragFlipRef.current;
+    if (!g.direction || !controller) return;
+    controller.end(!cancelled && shouldCommit(controller.progress, g.velocity) ? 'commit' : 'cancel');
+  };
+
+  // El mando se guarda también en una ref: los eventos llegan antes de que React repinte.
+  const dragFlipRef = useRef<DragFlipController | null>(null);
+  useLayoutEffect(() => {
+    dragFlipRef.current = dragFlip;
+  });
+  if (dragFlip && !nav.flip?.interactive) setDragFlip(null);
 
   // ── Marcapáginas ─────────────────────────────────────────────────────────
   const toggleBookmark = () => {
@@ -243,7 +303,13 @@ export function BookScene({ onCreate, onEdit, onDelete, onToggleFavorite, onCook
   const pageLabel = primary?.number ? `Página ${primary.number} de ${pages[pages.length - 1]?.number ?? '—'}` : '';
 
   return (
-    <div className={styles.scene} onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={() => (swipe.current = null)}>
+    <div
+      className={styles.scene}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={(e) => endGesture(e)}
+      onPointerCancel={(e) => endGesture(e, true)}
+    >
       <header className={styles.toolbar}>
         <div className={styles.brand}>
           <BookOpenText aria-hidden="true" />
@@ -285,8 +351,9 @@ export function BookScene({ onCreate, onEdit, onDelete, onToggleFavorite, onCook
               icon={<PenLine />}
               onClick={() => onCreate(currentCategory)}
               aria-label="Escribir una receta nueva"
+              title="Nueva receta"
             >
-              Nueva receta
+              {viewport.width < 420 ? null : compactToolbar ? 'Nueva' : 'Nueva receta'}
             </Button>
             <MusicToggle compact />
             <OptionsMenu items={menuItems} />
@@ -310,7 +377,8 @@ export function BookScene({ onCreate, onEdit, onDelete, onToggleFavorite, onCook
               </IconButton>
             )}
             <div
-              className={styles.bookBox}
+              data-book-surface
+              className={`${styles.bookBox} ${dragFlip ? styles.dragging : ''}`}
               style={{ width: outer.width * scale, height: outer.height * scale, '--ribbon': `var(--${prefs.ribbonColor})` } as CSSProperties}
             >
               <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
@@ -324,6 +392,8 @@ export function BookScene({ onCreate, onEdit, onDelete, onToggleFavorite, onCook
                     reducedMotion={reducedMotion}
                     bookmarkIndex={bookmarkIndex}
                     onFlipDone={finishFlip}
+                    dragFlip={dragFlip}
+                    onFlipCancel={cancelFlip}
                     onCoverDone={onCoverDone}
                     onCoverClick={openBook}
                     onTab={(index) => (isOpen ? goToPage(index) : (openBook(), goToPage(index, false)))}

@@ -58,6 +58,10 @@
   .brand span {
     display: none;
   }
+  /* Con el libro abierto, la barra necesita todo el ancho para sus botones. */
+  .toolbar:has(nav[aria-label='Acciones del libro']) .brand {
+    display: none;
+  }
   .actions {
     gap: 6px;
   }
@@ -77,6 +81,14 @@
 .bookBox {
   position: relative;
   flex: none;
+  /* El navegador deja el desplazamiento vertical; el horizontal es para pasar página. */
+  touch-action: pan-y pinch-zoom;
+}
+
+/* Mientras se arrastra una hoja no se selecciona texto y el cursor «agarra». */
+.dragging {
+  cursor: grabbing;
+  user-select: none;
 }
 
 .arrowPrev,

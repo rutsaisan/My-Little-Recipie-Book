@@ -16,6 +16,11 @@ export interface Preferences {
   celebrations: boolean;
   recentRecipes: string[];
   assistantVoice: boolean;
+  privacyAccepted: boolean;
+  aiNoticeSeen: boolean;
+  notifications: { timers: boolean; imports: boolean; toTry: boolean };
+  lastToTryReminder: number;
+  assistantPosition: { side: 'left' | 'right'; y: number };
 }
 
 export const DEFAULT_DEDICATION = 'recetas hechas con cariño';
@@ -32,6 +37,11 @@ export const DEFAULT_PREFERENCES: Preferences = {
   celebrations: true,
   recentRecipes: [],
   assistantVoice: true,
+  privacyAccepted: false,
+  aiNoticeSeen: false,
+  notifications: { timers: false, imports: false, toTry: false },
+  lastToTryReminder: 0,
+  assistantPosition: { side: 'right', y: 1 },
 };
 
 const isCharacter = (id: unknown): id is CharacterId => typeof id === 'string' && id in CHARACTERS;
@@ -59,6 +69,21 @@ export function readPreferences(raw: Partial<Settings>): Preferences {
       ? raw.recentRecipes.filter((id): id is string => typeof id === 'string').slice(0, 12)
       : [],
     assistantVoice: raw.assistantVoice !== false,
+    privacyAccepted: raw.privacyAccepted === true,
+    aiNoticeSeen: raw.aiNoticeSeen === true,
+    notifications: {
+      timers: raw.notifications?.timers === true,
+      imports: raw.notifications?.imports === true,
+      toTry: raw.notifications?.toTry === true,
+    },
+    lastToTryReminder: typeof raw.lastToTryReminder === 'number' ? raw.lastToTryReminder : 0,
+    assistantPosition: {
+      side: raw.assistantPosition?.side === 'left' ? 'left' : 'right',
+      y:
+        typeof raw.assistantPosition?.y === 'number' && Number.isFinite(raw.assistantPosition.y)
+          ? Math.min(1, Math.max(0, raw.assistantPosition.y))
+          : 1,
+    },
   };
 }
 

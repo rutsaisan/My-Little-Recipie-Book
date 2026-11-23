@@ -260,6 +260,22 @@ texto ────────────────────────�
 - Las fotos se eligen entre 12 fotogramas: una del plato terminado o una por
   paso (propuestas por la IA; si no elige, el último fotograma).
 
+### Después de la fase 4 (hecho)
+- **Pasar página arrastrando** (`components/book/dragFlip.ts`): el gesto crea
+  un paso de página «interactivo» y la hoja (`FlipLeaf`) deja su animación en
+  pausa y mueve su tiempo con el dedo; al soltar, `shouldCommit` decide si
+  termina (`finishFlip`) o vuelve atrás (`cancelFlip`). El progreso no pasa
+  por el estado de React para no repintar el libro en cada movimiento.
+- **Tom con IA**: `server/assistant.ts` (`/api/assistant/status` y
+  `/api/assistant/ask`) y `services/assistant/tomAI.ts`. La respuesta fiable
+  de `kitchenHelp.ts` se envía como «dato fiable» para que la IA no la
+  contradiga. Sin IA, el panel muestra `notice/AiNotice`.
+- **Avisos**: `notice/NoticeCard` (tarjeta común), `notice/PrivacyNotice`
+  (aviso y política, borrar datos con `services/wipeData.ts`) y
+  `services/notifications.ts` (por el service worker cuando existe).
+- **Tom arrastrable** y hoja inferior en el móvil; posición guardada en
+  ajustes (`assistantPosition`).
+
 ### Base de datos y cuentas
 - Implementar `data/api/repositories.ts` (mismas interfaces de
   `data/types.ts`) y registrarlo en `data/index.ts`; activar con

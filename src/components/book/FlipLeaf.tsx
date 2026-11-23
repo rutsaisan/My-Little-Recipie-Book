@@ -5,6 +5,7 @@
  * oscurecen la cara que se aleja, la página que se descubre y la que se tapa.
  */
 import { useLayoutEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
+import type { DragFlipController } from './dragFlip';
 import styles from './FlipLeaf.module.css';
 
 /** Mitad del libro sobre la que gira la hoja (su lado «de reposo»). */
@@ -23,6 +24,12 @@ interface FlipLeafProps {
   onDone: () => void;
   /** Elemento que debe moverse a la vez (el libro al abrir o cerrar la tapa). */
   companion?: { ref: RefObject<HTMLElement | null>; keyframes: Keyframe[] };
+  /**
+   * Paso de página arrastrando: la hoja sigue al dedo o al ratón y, al
+   * soltar, termina de girar (`onDone`) o vuelve a su sitio (`onCancel`).
+   */
+  drag?: DragFlipController;
+  onCancel?: () => void;
 }
 
 const EASING = 'cubic-bezier(0.45, 0.05, 0.28, 1)';
@@ -43,6 +50,8 @@ export function FlipLeaf({
   duration,
   onDone,
   companion,
+  drag,
+  onCancel,
 }: FlipLeafProps) {
   const leafRef = useRef<HTMLDivElement>(null);
   const frontShadeRef = useRef<HTMLDivElement>(null);
@@ -50,10 +59,13 @@ export function FlipLeaf({
   const uncoverRef = useRef<HTMLDivElement>(null);
   const coverRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef(onDone);
+  const cancelRef = useRef(onCancel);
   const companionRef = useRef(companion);
+  const dragRef = useRef(drag);
 
   useLayoutEffect(() => {
     doneRef.current = onDone;
+    cancelRef.current = onCancel;
     companionRef.current = companion;
   });
 
@@ -75,19 +87,52 @@ export function FlipLeaf({
     if (extra && companionEl) animations.push(companionEl.animate(extra.keyframes, timing));
 
     let cancelled = false;
-    animations[0].finished.then(
-      () => !cancelled && doneRef.current(),
-      () => {},
-    );
+    let fallback = 0;
+    const controller = dragRef.current;
+    const finish = () => {
+      if (cancelled) return;
+      if (controller?.release === 'cancel') cancelRef.current?.();
+      else doneRef.current();
+    };
+    animations[0].finished.then(finish, () => {});
     // Si el navegador deja de pintar (pestaña oculta, ventana minimizada…), la
     // animación se congela; pasado su tiempo se completa igualmente.
-    const fallback = window.setTimeout(() => {
-      animations.forEach((a) => {
-        if (a.playState !== 'finished') a.finish();
-      });
-    }, duration + 400);
+    const armFallback = (ms: number) => {
+      window.clearTimeout(fallback);
+      fallback = window.setTimeout(() => {
+        animations.forEach((a) => {
+          if (a.playState !== 'finished') a.finish();
+        });
+      }, ms + 400);
+    };
+
+    let unsubscribe = () => {};
+    if (controller) {
+      // Arrastrando: la animación queda en pausa y su tiempo lo marca el gesto.
+      const sync = () => {
+        const release = controller.release;
+        if (release) {
+          unsubscribe();
+          const at = (animations[0].currentTime as number | null) ?? 0;
+          if (release === 'cancel') animations.forEach((a) => (a.playbackRate = -1.6));
+          else animations.forEach((a) => (a.playbackRate = 1.4));
+          animations.forEach((a) => a.play());
+          armFallback(release === 'cancel' ? at / 1.6 : (duration - at) / 1.4);
+          return;
+        }
+        animations.forEach((a) => {
+          a.pause();
+          a.currentTime = controller.progress * duration;
+        });
+      };
+      unsubscribe = controller.subscribe(sync);
+      sync();
+    } else {
+      armFallback(duration);
+    }
     return () => {
       cancelled = true;
+      unsubscribe();
       window.clearTimeout(fallback);
       animations.forEach((a) => a.cancel());
     };

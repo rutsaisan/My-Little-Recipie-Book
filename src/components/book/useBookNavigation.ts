@@ -12,6 +12,8 @@ export interface FlipState {
   from: number;
   to: number;
   direction: 'forward' | 'backward';
+  /** La hoja la mueve el dedo o el ratón (ver dragFlip.ts). */
+  interactive?: boolean;
 }
 
 interface NavState {
@@ -85,8 +87,27 @@ export function useBookNavigation(layout: BookLayout | null, mode: BookMode) {
           flip: { id: ++flipCounter, from: view, to, direction: to > view ? 'forward' : 'backward' },
         };
       }
-      return { ...prev, view, flip: null, queued: null };
+      return { ...prev, view, flip: null, queued: null, anchor: primaryPage(prev.mode, view, prev.layout.pages)?.key ?? prev.anchor };
     });
+  }, []);
+
+  /** Empieza a pasar página arrastrando. Devuelve false si no se puede. */
+  const startDrag = useCallback(
+    (direction: 'forward' | 'backward'): boolean => {
+      if (nav.flip || !nav.layout) return false;
+      const to = nav.view + (direction === 'forward' ? 1 : -1);
+      if (to < 0 || to > viewCount(nav.mode, nav.layout.pages.length) - 1) return false;
+      setNav((prev) =>
+        prev.flip ? prev : { ...prev, flip: { id: ++flipCounter, from: prev.view, to, direction, interactive: true } },
+      );
+      return true;
+    },
+    [nav.flip, nav.layout, nav.view, nav.mode],
+  );
+
+  /** La hoja arrastrada vuelve a su sitio: el libro se queda donde estaba. */
+  const cancelFlip = useCallback(() => {
+    setNav((prev) => (prev.flip ? { ...prev, flip: null, queued: null } : prev));
   }, []);
 
   /** Vista a la que se dirige el libro (la de destino si hay un paso en curso). */
@@ -111,5 +132,7 @@ export function useBookNavigation(layout: BookLayout | null, mode: BookMode) {
     next,
     prev,
     finishFlip,
+    startDrag,
+    cancelFlip,
   };
 }

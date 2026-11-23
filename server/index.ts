@@ -9,10 +9,13 @@
  *   GET  /api/import/video/:id     vídeo descargado (temporal)
  *   POST /api/import/transcribe    audio PCM 16 kHz mono → texto
  *   POST /api/import/analyze       transcripción + texto + fotogramas → receta
+ *   GET  /api/assistant/status     ¿puede Tom responder con IA?
+ *   POST /api/assistant/ask        pregunta (y receta abierta) → respuesta de Tom
  */
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import type { AnalyzeRequest, ImportCapabilities } from '../src/domain/importTypes.ts';
 import { analyzeVideo } from './analyze.ts';
+import { askAssistant, type AskRequest } from './assistant.ts';
 import { config } from './config.ts';
 import { linkDownloadAvailable, openVideo, processLink } from './link.ts';
 import { createProvider } from './providers/index.ts';
@@ -73,6 +76,27 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   const route = `${req.method} ${url.pathname}`;
 
   if (route === 'GET /api/import/capabilities') return send(res, 200, await capabilities());
+
+  if (route === 'GET /api/assistant/status') {
+    const health = await provider.health();
+    return send(res, 200, { ai: health.ok, provider: provider.name, model: provider.textModel, message: health.message ?? null });
+  }
+
+  if (route === 'POST /api/assistant/ask') {
+    const body = await readJSON<Partial<AskRequest>>(req, 200_000);
+    const health = await provider.health();
+    if (!health.ok) throw new ProviderError(health.message ?? 'La IA no está disponible.', 503);
+    const strings = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
+    const recipe =
+      body.recipe && typeof body.recipe.title === 'string'
+        ? { title: body.recipe.title, ingredients: strings(body.recipe.ingredients), steps: strings(body.recipe.steps) }
+        : null;
+    return send(res, 200, await askAssistant(provider, {
+        question: String(body.question ?? ''),
+        reference: typeof body.reference === 'string' ? body.reference : null,
+        recipe,
+      }));
+  }
 
   if (route === 'POST /api/import/link') {
     const { url: link } = await readJSON<{ url?: string }>(req, 10_000);

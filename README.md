@@ -45,7 +45,9 @@ y abre en el móvil la dirección «Network» que muestra la consola.
 
 - Portada de cuaderno con animación de apertura y cierre.
 - Libro abierto a dos páginas en ordenador y una página en móvil, con paso de
-  página animado (botones, esquinas, flechas del teclado o deslizando el dedo).
+  página animado (botones, esquinas, flechas del teclado o **arrastrando la hoja
+  con el dedo o el ratón**: la hoja sigue el gesto y, al soltar, termina de
+  girar o vuelve a su sitio).
 - Portadilla, índice interactivo, separadores por sección con pestañas que
   cambian de lado al pasar las hojas, numeración y marcapáginas.
 - Formulario de receta en tres apartados: **fotografías** (una foto final o
@@ -83,13 +85,17 @@ y abre en el móvil la dirección «Network» que muestra la consola.
 
 ## Qué incluye la fase 3 (asistente)
 
-- **Tom, el ayudante de cocina** (el gatito cocinero), en la esquina de la
-  mesa. Tiene estados visibles: esperando, hablando, escuchando, pensando y
-  celebrando. Al pulsarlo abre su panel.
-- **Preguntas**: cómo usar la app y dudas habituales de cocina
-  (sustituciones, equivalencias de tazas y cucharadas, trucos). Funciona sin
-  conexión ni IA: si no sabe algo, lo dice en vez de inventarlo. Se puede
-  preguntar escribiendo o con la voz.
+- **Tom, el ayudante de cocina** (el gatito cocinero). Tiene estados
+  visibles: esperando, hablando, escuchando, pensando y celebrando. Al
+  pulsarlo abre su panel (en el móvil, como una hoja que sube desde abajo).
+  **Se puede arrastrar** a cualquier altura de los bordes izquierdo o derecho,
+  y recuerda dónde lo dejaste.
+- **Preguntas con IA**: con [Ollama](https://ollama.com) en marcha, Tom
+  responde cualquier duda de cocina o de la app (apoyándose en sus respuestas
+  fiables cuando las tiene; si no sabe algo, lo dice). **Sin Ollama** (por
+  ejemplo, en la versión publicada en internet) las preguntas se desactivan
+  con un aviso, y todo lo demás de Tom sigue funcionando. Se puede preguntar
+  escribiendo o con la voz.
 - **Lectura en voz alta** de la receta que estés viendo (se puede apagar).
 - **Temporizadores** con aviso sonoro y visual; siguen contando aunque
   recargues la página.
@@ -106,6 +112,17 @@ y abre en el móvil la dirección «Network» que muestra la consola.
 El reconocimiento de voz usa el del navegador (Chrome, Edge o Safari), que
 envía el audio a su servicio para pasarlo a texto; la app no guarda
 grabaciones. Si el navegador no lo admite, todo lo demás funciona escribiendo.
+
+## Privacidad y avisos
+
+- La primera vez aparece un **aviso de privacidad**: la app no usa cookies de
+  publicidad ni de seguimiento; todo se guarda en el propio dispositivo. Su
+  política (también en *Personalizar*) explica qué se guarda y permite
+  **borrar todos los datos**.
+- **Notificaciones** (opcionales, en *Personalizar → Avisos*): cuando termina
+  un temporizador, cuando acaba una importación de vídeo y, como mucho cada
+  tres días, un recordatorio de alguna receta «Por probar». Llegan mientras la
+  app está abierta, aunque esté en segundo plano; no hay servidor de avisos.
 
 ## Importar recetas de vídeos (fase 4)
 

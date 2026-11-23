@@ -13,6 +13,12 @@ import { useToast } from '../../state/toastContext';
 import { customCategoryInfo, paletteVar } from '../decor/categoryArt';
 import { Sticker } from '../decor/Sticker';
 import { useAmbientMusic } from '../music/useAmbientMusic';
+import { PrivacyDialog } from '../notice/PrivacyNotice';
+import {
+  notificationPermission,
+  notificationsSupported,
+  requestNotificationPermission,
+} from '../../services/notifications';
 import { Button, IconButton } from '../ui/Button';
 import { Dialog } from '../ui/Dialog';
 import { SectionForm } from './SectionForm';
@@ -34,6 +40,8 @@ export function PersonalizeSheet({ onClose }: { onClose: () => void }) {
   const [slot, setSlot] = useState(0);
   const [editing, setEditing] = useState<string | 'new' | null>(null);
   const [toDelete, setToDelete] = useState<string | null>(null);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [permission, setPermission] = useState(notificationPermission);
   const ids = { owner: useId(), dedication: useId(), volume: useId(), title: useId() };
   const unlockedSet = new Set(unlocked.keys());
 
@@ -213,6 +221,54 @@ export function PersonalizeSheet({ onClose }: { onClose: () => void }) {
           </section>
 
           <section className={styles.group}>
+            <h3 className={styles.groupTitle}>Avisos</h3>
+            {notificationsSupported() ? (
+              <>
+                {(
+                  [
+                    ['timers', 'Cuando termina un temporizador'],
+                    ['imports', 'Cuando termino de sacar una receta de un vídeo'],
+                    ['toTry', 'Recordarme de vez en cuando las recetas «Por probar»'],
+                  ] as const
+                ).map(([key, label]) => (
+                  <label key={key} className={styles.switchRow}>
+                    <input
+                      type="checkbox"
+                      checked={prefs.notifications[key] && permission === 'granted'}
+                      disabled={permission === 'denied'}
+                      onChange={async (e) => {
+                        const on = e.target.checked;
+                        if (on) {
+                          const result = await requestNotificationPermission();
+                          setPermission(result);
+                          if (result !== 'granted') return;
+                        }
+                        setPref('notifications', { ...prefs.notifications, [key]: on });
+                      }}
+                    />
+                    {label}
+                  </label>
+                ))}
+                <p className={styles.hint}>
+                  {permission === 'denied'
+                    ? 'Has bloqueado los avisos para esta web. Para activarlos, permítelos en los ajustes del navegador (el candado junto a la dirección).'
+                    : 'Los avisos llegan mientras la app está abierta, aunque estés en otra pestaña o con el móvil en otra app.'}
+                </p>
+              </>
+            ) : (
+              <p className={styles.hint}>Este navegador no admite avisos. En el móvil, instala la app para recibirlos.</p>
+            )}
+          </section>
+
+          <section className={styles.group}>
+            <h3 className={styles.groupTitle}>Privacidad</h3>
+            <p className={styles.hint}>Qué se guarda, dónde, y cómo borrarlo todo.</p>
+            <Button size="sm" onClick={() => setPrivacyOpen(true)}>
+              Ver la política de privacidad
+            </Button>
+          </section>
+
+          <section className={styles.group}>
             <h3 className={styles.groupTitle}>Tus secciones</h3>
             {custom.length === 0 && editing !== 'new' && (
               <p className={styles.hint}>Además de las secciones de siempre, puedes crear las tuyas.</p>
@@ -248,6 +304,7 @@ export function PersonalizeSheet({ onClose }: { onClose: () => void }) {
           </section>
         </div>
       </aside>
+      <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
 
       <Dialog
         open={Boolean(deleting)}

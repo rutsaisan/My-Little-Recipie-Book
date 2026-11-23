@@ -16,6 +16,7 @@ import type { PageSide } from '../pages/PageFrame';
 import { BookmarkRibbon } from './BookmarkRibbon';
 import { CategoryTabs } from './CategoryTabs';
 import { FlipLeaf } from './FlipLeaf';
+import type { DragFlipController } from './dragFlip';
 import type { FlipState } from './useBookNavigation';
 import styles from './Book.module.css';
 
@@ -30,6 +31,9 @@ interface BookProps {
   reducedMotion: boolean;
   bookmarkIndex: number | null;
   onFlipDone: () => void;
+  /** Paso de página arrastrando en curso (si lo hay) y qué hacer si se suelta sin pasar. */
+  dragFlip: DragFlipController | null;
+  onFlipCancel: () => void;
   onCoverDone: () => void;
   onCoverClick: () => void;
   onTab: (pageIndex: number) => void;
@@ -83,6 +87,8 @@ export function Book(props: BookProps) {
           pageHeight={g.pageHeight}
           duration={flipDuration}
           onDone={props.onFlipDone}
+          drag={flipping.interactive ? (props.dragFlip ?? undefined) : undefined}
+          onCancel={props.onFlipCancel}
         />
       );
     }
@@ -102,6 +108,8 @@ export function Book(props: BookProps) {
         pageHeight={g.pageHeight}
         duration={flipDuration}
         onDone={props.onFlipDone}
+        drag={flipping.interactive ? (props.dragFlip ?? undefined) : undefined}
+        onCancel={props.onFlipCancel}
       />
     );
   }
